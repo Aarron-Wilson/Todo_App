@@ -1,0 +1,95 @@
+
+{% load static %}
+
+<html>
+<body style="background-color: rgb(248, 248, 248);">
+    <header style="font-size: 30px;"> Todos </header>
+    
+    <div id="ab" style="border-style: solid;border-color: black;">
+        {% for a in alltodos %}
+        <div  class="maintable" style="display: flex;flex-direction: row;">
+            <div>
+                {{a.Description}}
+            </div>
+
+            <div style="margin-left:20px;margin-right:20px;">
+                {{a.AssignedPerson.Name}}
+            </div>
+            
+            {% if a.Finished == True %}
+            <img src="{% static 'done.png' %}" width="25" height="25" onclick='taskCompleteSwitch(this,"{{a.pk}}")'>
+            {% else %}
+            <img src="{% static 'notdone.png' %}" width="25" height="25" onclick='taskCompleteSwitch(this,"{{a.pk}}")'>
+            {% endif %}
+            
+        </div>
+        {%endfor%}
+    </div>
+
+    <p> Add New </p>
+</body>
+
+
+</html>
+
+<script>
+    //const csrftoken = '{{ csrf_token }}';
+
+    function taskCompleteSwitch(imageControl,ID){
+        let doneURL = "{% static 'done.png' %}";
+        let undoneURL = "{% static 'notdone.png' %}";
+
+        fetch('/api/todo/toggle/' + ID, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+            //'X-CSRFToken': csrftoken
+        }
+        })
+        .then(response => {
+            // This 'response' is the Response object from the fetch API
+            if (!response.ok) {
+                // Handle HTTP errors
+                alert("HTTP Error.");
+                return;
+            }
+            // Parse the response body as JSON
+            return  response.json();
+        })
+        .then(jsonResponse => {
+            // This 'jsonResponse' is the parsed JSON data
+            if(jsonResponse.completed){
+                imageControl.src = doneURL;
+            }
+            else{
+                imageControl.src = undoneURL;
+            }
+        })
+        .catch(error => {
+            alert('There was a problem with the fetch operation:', error);
+        });
+    }
+</script>
+
+<style>
+    *{
+        font-family:Arial, Helvetica, sans-serif;
+        font: size 60px;
+    }
+
+    div {
+        font-size:24px;
+    }
+
+    .maintable:nth-child(even){
+        background-color: rgb(255, 255, 255);
+    }
+
+    .maintable:nth-child(odd){
+        background-color: rgb(129, 185, 158);
+    }
+
+    #ab {
+        width:500px;
+    }
+</style>
