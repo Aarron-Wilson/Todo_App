@@ -37,4 +37,10 @@ def todoCompleteToggle(request,todoID):
     todo.save()
     return JsonResponse({'completed':todo.Finished})
 
+@csrf_exempt
+def deleteTodo(request,todoID):
+    todo = Todo.objects.get(pk=todoID)
+    todo.delete()
+    return JsonResponse({'completed':True})
+
     

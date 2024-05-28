@@ -7,20 +7,25 @@
     <div id="ab" style="border-style: solid;border-color: black;">
         {% for a in alltodos %}
         <div  class="maintable" style="display: flex;flex-direction: row;">
-            <div>
+            <div style="width:300px;margin-left:20px;">
                 {{a.Description}}
             </div>
 
-            <div style="margin-left:20px;margin-right:20px;">
+            <div style="margin-left:20px;margin-right:20px;width:150px;">
                 {{a.AssignedPerson.Name}}
             </div>
             
+            <div style="width:200px;">
+            {{a.Catagory.Name}}
+            </div>
+
             {% if a.Finished == True %}
-            <img src="{% static 'done.png' %}" width="25" height="25" onclick='taskCompleteSwitch(this,"{{a.pk}}")'>
+            <img src="{% static 'done.png' %}" width="25" height="25" style="margin-left:30px;margin-right:30px;" onclick='taskCompleteSwitch(this,"{{a.pk}}")'>
             {% else %}
-            <img src="{% static 'notdone.png' %}" width="25" height="25" onclick='taskCompleteSwitch(this,"{{a.pk}}")'>
+            <img src="{% static 'notdone.png' %}" width="25" height="25" style="margin-left:30px;margin-right:30px;" onclick='taskCompleteSwitch(this,"{{a.pk}}")'>
             {% endif %}
             
+            <img src="{% static 'trashcan.png' %}" width="25" height="25" style="margin-left:10px;margin-right:10px;" onclick='deleteTodo(this,"{{a.pk}}")'>
         </div>
         {%endfor%}
     </div>
@@ -68,6 +73,40 @@
             alert('There was a problem with the fetch operation:', error);
         });
     }
+
+    function deleteTodo(clickedTodoControl,todoID){
+        if(confirm("Would you like to delete todo?")){
+            var row = clickedTodoControl.parentNode;
+            row.parentNode.removeChild(row);
+
+            fetch('/api/todo/delete/' + todoID, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+                //'X-CSRFToken': csrftoken
+            }
+            })
+            .then(response => {
+                // This 'response' is the Response object from the fetch API
+                if (!response.ok) {
+                    // Handle HTTP errors
+                    alert("HTTP Error.");
+                    return;
+                }
+                // Parse the response body as JSON
+                return  response.json();
+            })
+            .then(jsonResponse => {
+                // This 'jsonResponse' is the parsed JSON data
+                if(!(jsonResponse.completed)){
+                    alert("Api error.");
+                }
+            })
+            .catch(error => {
+                alert('There was a problem with the fetch operation:', error);
+            });
+        }
+    }
 </script>
 
 <style>
@@ -93,6 +132,8 @@
     }
 
     #ab {
-        width:500px;
+        width:600px;
+        margin-left:20px;
+        margin-top:5px;
     }
 </style>
