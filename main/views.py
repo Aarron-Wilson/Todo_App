@@ -13,6 +13,9 @@ def main_page(request):
     alltodos = Todo.objects.all()
     return render(request,'hello.html',{'name':'Aarron','alltodos':alltodos})
 
+def addCatagory(request):
+    return render(request,'createCatagory.html',{})
+
 class TodoCreateView(CreateView):
     model = Todo
     form_class = TodoForm
@@ -42,5 +45,14 @@ def deleteTodo(request,todoID):
     todo = Todo.objects.get(pk=todoID)
     todo.delete()
     return JsonResponse({'completed':True})
+
+@csrf_exempt
+def createCatagory(request,catagoryName):
+    try:
+        newCatagory = Catagory( Name=catagoryName)
+        newCatagory.save()
+        return JsonResponse({'completed': True})
+    except Exception as e:
+        return JsonResponse({'completed': False})
 
     
