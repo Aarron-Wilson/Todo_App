@@ -11,8 +11,10 @@ urlpatterns = [
     path("api/todo/toggle/<int:todoID>",views.todoCompleteToggle),
     path("api/todo/delete/<int:todoID>",views.deleteTodo),
     path("api/catagory/create/<str:catagoryName>",views.createCatagory),
+    path("api/user/create/<str:userName>",views.createPerson),
     path('addTodo/',TodoCreateView.as_view(),name='todo_add'),
-    path('addCatagory/',views.addCatagory)
+    path('addCatagory/',views.addCatagory),
+    path('addPerson/',views.addPersonPage)
 ]
 
 if settings.DEBUG:
