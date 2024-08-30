@@ -6,7 +6,7 @@
     
     <div id="ab" style="border-style: solid;border-color: black;">
         {% for a in alltodos %}
-        <div  class="maintable" style="display: flex;flex-direction: row;">
+        <div  class="maintable" style="display: flex;flex-direction: row;" ondblclick="editTodo('{{a.pk}}')">
             <div style="width:300px;margin-left:20px;">
                 {{a.Description}}
             </div>
@@ -108,6 +108,10 @@
                 alert('There was a problem with the fetch operation:', error);
             });
         }
+    }
+
+    function editTodo(ID){
+        window.location.href = '/todo/edit/' + ID;
     }
 </script>
 

@@ -1,0 +1,101 @@
+{% load static %}
+
+<html>
+<body style="background-color: rgb(89, 151, 95);">
+    <header style="font-size: 30px;"> Edit Todo </header>
+        {% csrf_token %}
+        
+        <div>
+            <p> Description </p>
+            <input id="descriptionTextbox" type="text" value="{{todo.Description}}"> </input>
+            <p> Catagory </p>
+            <select id="catagoryOptions">
+                {% for a in allCatagorys %}
+                    <option> {{a.Name}}</option>
+                {%endfor%}
+            </select>
+            <p> Assigned Person </p>
+            <select id="assignedPersonOptions"> 
+                {% for a in allPeople %}
+                    <option> {{a.Name}}</option>
+                {%endfor%}
+            </select>
+
+            <div style="display:flex;flex-direction:right;margin-top:20px">
+                <input type="button" value="Save" onclick="save()" style="margin-right:15px;"> </input>
+                <input type="button" onclick="cancel()" value="Cancel"> </input>
+            </div>
+        </div>
+</body>
+
+
+</html>
+
+<script>
+    var todoID = "{{todo.pk}}"
+    var selectedCatagory = "{{todo.Catagory.Name}}"
+    var selectedPerson = "{{todo.AssignedPerson.Name}}"
+
+    addEventListener("DOMContentLoaded", (event) => {
+        document.getElementById('catagoryOptions').value = selectedCatagory;
+        document.getElementById('assignedPersonOptions').value = selectedPerson;
+    });
+
+    //const csrftoken = '{{ csrf_token }}';
+    function cancel(){
+        window.location.href = '/';
+    }
+
+    function save(){
+        let finalPersonSelection = document.getElementById('assignedPersonOptions').value 
+        let finalCatagorySelection = document.getElementById('catagoryOptions').value
+        var finalDescriptionSelection = document.getElementById('descriptionTextbox').value
+        //todo person catagory
+        //api/todo/edit/<int:todoID>/<str:person>/<str:catagory>
+        fetch('/api/todo/edit/' + todoID + "/" + finalPersonSelection + "/" + finalCatagorySelection + "/" + finalDescriptionSelection,{
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+            //'X-CSRFToken': csrftoken
+        }
+        })
+        .then(response => {
+            // This 'response' is the Response object from the fetch API
+            if (!response.ok) {
+                // Handle HTTP errors
+                alert("HTTP Error.");
+                return;
+            }
+            // Parse the response body as JSON
+            return  response.json();
+        })
+        .then(jsonResponse => {
+            // This 'jsonResponse' is the parsed JSON data
+            if(jsonResponse.completed){
+                window.location.href = '/'
+            }
+            else{
+                alert(jsonResponse.reason)
+            }
+        })
+        .catch(error => {
+            alert('There was a problem with the fetch operation:', error);
+        });
+    }
+    
+</script>
+
+<style>
+    *{
+        font-family:Arial, Helvetica, sans-serif;
+        font: size 60px;
+    }
+
+    div {
+        font-size:24px;
+    }
+
+    select{
+        width:150px;
+    }
+</style>

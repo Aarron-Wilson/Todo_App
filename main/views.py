@@ -19,6 +19,12 @@ def addCatagory(request):
 def addPersonPage(request):
     return render(request,'createUser.html',{})
 
+def editTodoPage(request,todoID):
+    allPeople = Person.objects.all()
+    allCatagorys = Catagory.objects.all()
+    target = Todo.objects.get(pk=todoID)
+    return render(request,'editTodo.html',{'todo':target,'allPeople':allPeople,'allCatagorys':allCatagorys})
+
 class TodoCreateView(CreateView):
     model = Todo
     form_class = TodoForm
@@ -67,4 +73,17 @@ def createPerson(request,userName):
     except Exception as e:
         return JsonResponse({'completed': False})
 
-    
+@csrf_exempt
+def editTodo(request,todoID,person,catagory,description):
+    try:
+        wholeCatagory = Catagory.objects.get(Name=catagory)
+        wholePerson = Person.objects.get(Name=person)
+        targetTodo = Todo.objects.get(pk=todoID)
+        targetTodo.AssignedPerson = wholePerson
+        targetTodo.Catagory = wholeCatagory
+        targetTodo.Description = description
+        targetTodo.save()
+        return JsonResponse({'completed':True})
+    except Exception as e:
+        print(e)
+        return JsonResponse({'completed': False})
